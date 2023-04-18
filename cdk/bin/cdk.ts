@@ -2,9 +2,24 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { CdkStack } from '../lib/cdk-stack';
-
 const app = new cdk.App();
-new CdkStack(app, 'CdkStack', {
+
+const env = app.node.tryGetContext('env')
+const force = app.node.tryGetContext('force')
+
+console.log('env is ' + env)
+console.log('force is ' + force)
+let IS_VALID_ENV = ['dev', 'prod'].includes(env)
+
+if (!IS_VALID_ENV && force === 'true') {
+  IS_VALID_ENV = true
+}
+
+if (!IS_VALID_ENV) {
+  throw new Error('env not set');
+}
+
+new CdkStack(app, 'edgeui-' + env + '-api', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
