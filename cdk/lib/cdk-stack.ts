@@ -46,7 +46,8 @@ export class CdkStack extends cdk.Stack {
 
     let subscriptionItem = restApi.root.addResource('subscription');
     subscriptionItem.addMethod('POST');
-    subscriptionItem.addMethod('GET');
+    let subscriptionItemById = subscriptionItem.addResource('{id}');
+    subscriptionItemById.addMethod('GET');
 
     new route53.ARecord(this, "api-" + env + "-dns", {
       zone: hostedZone,
