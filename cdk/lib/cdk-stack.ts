@@ -36,6 +36,7 @@ export class CdkStack extends cdk.Stack {
 
     let restApi = new apigw.LambdaRestApi(this, STACK_NAME + '-apigateway', {
       handler: fn,
+      proxy: false,
       domainName: {
         domainName: 'api-' + env + '.edgeui.app',
         securityPolicy: apigw.SecurityPolicy.TLS_1_2,
@@ -43,7 +44,11 @@ export class CdkStack extends cdk.Stack {
       }
     })
 
-    new route53.ARecord(this, "apiDNS", {
+    let subscriptionItem = restApi.root.addResource('subscription');
+    subscriptionItem.addMethod('POST');
+    subscriptionItem.addMethod('GET');
+
+    new route53.ARecord(this, "api-" + env + "-dns", {
       zone: hostedZone,
       recordName: 'api-' + env,
       target: route53.RecordTarget.fromAlias(
